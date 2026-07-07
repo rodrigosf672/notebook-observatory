@@ -126,6 +126,29 @@ def build_context(datasets_dir: Path) -> dict:
             for col in trend_cols
             if col in cohort_y.columns
         }
+        # Pre-computed natural-language trend summaries. Small models struggle to
+        # reason over a dense number series, so we do the reasoning here and give
+        # the agent a correct sentence it only has to relay.
+        trend_summaries = {}
+        for lib in piv.columns:
+            series = [
+                (int(y), float(v)) for y, v in piv[lib].items() if not pd.isna(v)
+            ]
+            if len(series) < 2:
+                continue
+            series.sort()
+            first_y, first_v = series[0]
+            last_y, last_v = series[-1]
+            peak_y, peak_v = max(series, key=lambda t: t[1])
+            direction = (
+                "rose" if last_v > first_v + 2 else "fell" if last_v < first_v - 2 else "stayed roughly flat"
+            )
+            summary = (
+                f"{lib} {direction} from {first_v:.0f}% in {first_y} to "
+                f"{last_v:.0f}% in {last_y} (peak {peak_v:.0f}% in {peak_y})."
+            )
+            trend_summaries[lib] = summary
+
         ctx["cohorts"] = {
             "span": f"{cohort['run_date'].min()[:4]}-{cohort['run_date'].max()[:4]}",
             "n_cohorts": int(cohort["run_date"].nunique()),
@@ -136,6 +159,7 @@ def build_context(datasets_dir: Path) -> dict:
                 }
                 for lib in piv.columns
             },
+            "library_trend_summaries": trend_summaries,
             "structure_and_quality_by_creation_year": structure_by_year,
         }
     return ctx

@@ -93,6 +93,7 @@ Every stage is an independently testable module under
 | `analytics/` | Per-notebook derived metrics + daily aggregation |
 | `storage/` | Append-only Parquet / DuckDB / CSV longitudinal store |
 | `dashboard/` | Static, dark-mode, mobile-friendly site generation |
+| `agent/` | Data-grounded Q&A agent (Hugging Face Space, embedded in dashboard) |
 | `pipeline.py` | End-to-end orchestration |
 | `cli.py` | `nbobs` command-line entry point |
 
@@ -201,6 +202,31 @@ All tunables are environment variables (see
 dashboard → commit datasets & site → deploy Pages. It uses the built-in
 `GITHUB_TOKEN` (no secrets to configure) and handles failures gracefully.
 [`ci.yml`](.github/workflows/ci.yml) runs lint + type-check + tests on every push.
+
+---
+
+## Ask the observatory (Q&A agent)
+
+The dashboard embeds a **data-grounded Q&A agent** you can ask about the notebook
+ecosystem — which libraries dominate, how adoption and notebook structure shift
+by creation-year cohort, and what the dataset does and doesn't cover.
+
+- **Model:** [Qwen2.5-0.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct)
+  (Apache-2.0, ungated), running on a **free Hugging Face Space (CPU)**.
+- **Grounding:** a compact JSON snapshot of the real datasets
+  (`agent/observatory_context.json`) is injected into the system prompt — latest-day
+  library adoption, quality indices, structural stats, Python-version share, and
+  per-creation-year trends. The model reasons only from those numbers and is
+  instructed to defer to the datasets when a question falls outside them.
+- **Code:** [`agent/`](agent/) holds the Gradio app (`app.py`), its
+  `requirements.txt`/`README.md` Space config, and `build_context.py`, which
+  regenerates the grounding snapshot from the current datasets:
+
+```bash
+python agent/build_context.py    # refresh agent/observatory_context.json from datasets
+```
+
+It is a research demo, not an authoritative source — verify against the datasets below.
 
 ---
 

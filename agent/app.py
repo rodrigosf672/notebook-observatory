@@ -93,6 +93,15 @@ def _format_context(ctx: dict) -> str:
             "snapshot; subject to survivorship bias)."
         )
         lines.append("Library adoption (% of parsed notebooks) by notebook creation year:")
+        summaries = c.get("library_trend_summaries", {})
+        if summaries:
+            lines.append(
+                "Library trend summaries (prefer these exact statements when asked "
+                "how a library's adoption changed over time):"
+            )
+            for lib, summary in summaries.items():
+                lines.append(f"  - {summary}")
+        lines.append("Full adoption series by creation year (for detailed lookups):")
         by_year = c.get("library_adoption_pct_by_creation_year", {})
         for lib, series in by_year.items():
             pts = ", ".join(
@@ -165,22 +174,32 @@ def respond(message: str, history: list[dict]) -> str:
             msgs.append({"role": role, "content": content})
     msgs.append({"role": "user", "content": message.strip()})
 
-    inputs = tok.apply_chat_template(
-        msgs, add_generation_prompt=True, return_tensors="pt"
-    )
+    # apply_chat_template may return a bare tensor or a BatchEncoding dict
+    # depending on the transformers version; normalise to input_ids + mask.
     import torch
 
+    enc = tok.apply_chat_template(
+        msgs,
+        add_generation_prompt=True,
+        return_tensors="pt",
+        return_dict=True,
+    )
+    input_ids = enc["input_ids"]
+    attention_mask = enc.get("attention_mask")
+    prompt_len = input_ids.shape[1]
+
     with torch.no_grad():
+        # Greedy decoding: for factual Q&A over the grounding numbers, sampling
+        # introduces avoidable numeric errors. Deterministic is more faithful.
         out = model.generate(
-            inputs,
+            input_ids=input_ids,
+            attention_mask=attention_mask,
             max_new_tokens=MAX_NEW_TOKENS,
-            do_sample=True,
-            temperature=0.4,
-            top_p=0.9,
-            repetition_penalty=1.1,
+            do_sample=False,
+            repetition_penalty=1.15,
             pad_token_id=tok.eos_token_id,
         )
-    text = tok.decode(out[0][inputs.shape[1] :], skip_special_tokens=True)
+    text = tok.decode(out[0][prompt_len:], skip_special_tokens=True)
     return text.strip()
 
 
@@ -219,4 +238,4 @@ def build_demo():  # type: ignore[no-untyped-def]
 
 
 if __name__ == "__main__":
-    build_demo().queue(max_size=16).launch()
+    build_demo().queue(max_size=16).launch(show_error=True)

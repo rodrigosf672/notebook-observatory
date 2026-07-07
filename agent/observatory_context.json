@@ -352,6 +352,20 @@
         "2026": 12.6
       }
     },
+    "library_trend_summaries": {
+      "ipywidgets": "ipywidgets stayed roughly flat from 0% in 2014 to 0% in 2026 (peak 2% in 2019).",
+      "keras": "keras fell from 2% in 2014 to 0% in 2026 (peak 13% in 2019).",
+      "matplotlib": "matplotlib rose from 40% in 2014 to 69% in 2026 (peak 72% in 2020).",
+      "numpy": "numpy rose from 58% in 2014 to 71% in 2026 (peak 75% in 2020).",
+      "pandas": "pandas rose from 22% in 2014 to 67% in 2026 (peak 67% in 2026).",
+      "plotly": "plotly stayed roughly flat from 2% in 2014 to 2% in 2026 (peak 7% in 2023).",
+      "pytorch": "pytorch rose from 0% in 2014 to 18% in 2026 (peak 21% in 2024).",
+      "scikit_learn": "scikit_learn rose from 11% in 2014 to 31% in 2026 (peak 34% in 2020).",
+      "scipy": "scipy rose from 18% in 2014 to 22% in 2026 (peak 22% in 2026).",
+      "seaborn": "seaborn rose from 4% in 2014 to 35% in 2026 (peak 35% in 2026).",
+      "tensorflow": "tensorflow stayed roughly flat from 2% in 2014 to 0% in 2026 (peak 21% in 2017).",
+      "transformers": "transformers rose from 0% in 2014 to 13% in 2026 (peak 13% in 2026)."
+    },
     "structure_and_quality_by_creation_year": {
       "mean_total_cells": {
         "2014": 25.317,

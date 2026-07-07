@@ -1,85 +1,78 @@
 {
   "run_date": "2026-07-07",
-  "notebooks_collected": 391,
-  "notebooks_parsed": 390,
-  "repos_sampled": 147,
+  "notebooks_collected": 400,
+  "notebooks_parsed": 399,
   "strata": [
-    "age:created_2019",
     "activity:recent_push",
+    "age:created_2019",
     "repo_size:size:<500",
+    "stars:long_tail",
     "stars:medium",
     "stars:small",
-    "stars:long_tail",
     "topic:deep-learning"
   ],
   "top_libraries": [
     {
       "library": "numpy",
       "category": "array",
-      "adoption_pct": 60.769,
-      "notebook_count": 237
+      "adoption_pct": 63.659,
+      "notebook_count": 254
     },
     {
       "library": "matplotlib",
       "category": "plotting",
-      "adoption_pct": 51.282,
-      "notebook_count": 200
+      "adoption_pct": 54.135,
+      "notebook_count": 216
     },
     {
       "library": "pandas",
       "category": "array",
-      "adoption_pct": 40.513,
-      "notebook_count": 158
+      "adoption_pct": 47.87,
+      "notebook_count": 191
     },
     {
       "library": "scikit_learn",
       "category": "ml",
-      "adoption_pct": 23.333,
-      "notebook_count": 91
-    },
-    {
-      "library": "pytorch",
-      "category": "deep_learning",
-      "adoption_pct": 20.256,
-      "notebook_count": 79
+      "adoption_pct": 28.07,
+      "notebook_count": 112
     },
     {
       "library": "seaborn",
       "category": "plotting",
-      "adoption_pct": 15.385,
-      "notebook_count": 60
+      "adoption_pct": 17.544,
+      "notebook_count": 70
     },
     {
-      "library": "tensorflow",
+      "library": "pytorch",
       "category": "deep_learning",
-      "adoption_pct": 8.974,
-      "notebook_count": 35
+      "adoption_pct": 17.293,
+      "notebook_count": 69
     },
     {
       "library": "scipy",
       "category": "scientific",
-      "adoption_pct": 7.692,
-      "notebook_count": 30
+      "adoption_pct": 11.278,
+      "notebook_count": 45
+    },
+    {
+      "library": "tensorflow",
+      "category": "deep_learning",
+      "adoption_pct": 7.018,
+      "notebook_count": 28
     },
     {
       "library": "keras",
       "category": "deep_learning",
-      "adoption_pct": 4.615,
-      "notebook_count": 18
+      "adoption_pct": 5.764,
+      "notebook_count": 23
     },
     {
       "library": "plotly",
       "category": "plotting",
-      "adoption_pct": 3.846,
-      "notebook_count": 15
+      "adoption_pct": 4.762,
+      "notebook_count": 19
     }
   ],
-  "client_stats": {
-    "core_requests": 538,
-    "search_requests": 7,
-    "cache_hits": 0,
-    "conditional_not_modified": 0,
-    "retries": 0
-  },
-  "errors": 0
+  "note": "Regenerated from the committed observations partition for cross-artifact consistency; repos_contributing is distinct repos with >=1 collected notebook (the candidate-pool size is not recoverable from the stored observations).",
+  "repos_contributing": 120
 }

@@ -12,6 +12,7 @@ gracefully when only a single day of data exists.
 from __future__ import annotations
 
 import datetime as dt
+import os
 import shutil
 from pathlib import Path
 from typing import Any
@@ -42,13 +43,6 @@ _TREND_LIBRARIES = [
     "seaborn",
     "marimo",
     "ipywidgets",
-]
-_TREND_METRICS = [
-    "reproducibility_score",
-    "narrative_index",
-    "complexity_score",
-    "visualization_density",
-    "ml_usage_score",
 ]
 
 
@@ -107,12 +101,20 @@ def _stat_cards(
     return cards
 
 
-def build_site(paths: Paths | None = None, repo_url: str | None = None) -> Path:
+def build_site(
+    paths: Paths | None = None,
+    repo_url: str | None = None,
+    agent_space_url: str | None = None,
+) -> Path:
     """Render the static dashboard into ``site/``.
 
     Args:
         paths: Filesystem layout (defaults to the package config).
         repo_url: Canonical repository URL for links.
+        agent_space_url: Embed URL of the Hugging Face Space hosting the Q&A
+            agent. Defaults to the ``NBOBS_AGENT_SPACE_URL`` env var, then the
+            project's published Space. Pass an empty string to render the
+            "being provisioned" placeholder instead of the iframe.
 
     Returns:
         Path to the generated ``index.html``.
@@ -122,6 +124,11 @@ def build_site(paths: Paths | None = None, repo_url: str | None = None) -> Path:
     """
     paths = paths or PATHS
     repo_url = repo_url or "https://github.com/rodrigosf672/notebook-observatory"
+    if agent_space_url is None:
+        agent_space_url = os.environ.get(
+            "NBOBS_AGENT_SPACE_URL",
+            "https://rodrigosf672-notebook-observatory-agent.hf.space",
+        )
     store = DatasetStore(paths)
 
     snapshots = store.read_daily_snapshots()
@@ -144,25 +151,20 @@ def build_site(paths: Paths | None = None, repo_url: str | None = None) -> Path:
     cohort_adopt = adoption[adoption["collection_type"] == "cohort"]
     daily_adopt = adoption[adoption["collection_type"] == "daily"]
 
-    # Longitudinal charts prefer the cohort series (multi-year); the daily
-    # series is used for current-state cards. Fall back to daily if no cohorts.
-    trend_snaps = cohort_snaps if not cohort_snaps.empty else daily_snaps
+    # The adoption-trend chart prefers the multi-year cohort series; the daily
+    # series drives current-state cards. Fall back to daily if no cohorts.
     trend_adopt = cohort_adopt if not cohort_adopt.empty else daily_adopt
-    # Current-state figures/cards use the latest daily run (fallback: latest overall).
     current_snaps = daily_snaps if not daily_snaps.empty else snapshots
     current_adopt = daily_adopt if not daily_adopt.empty else adoption
     has_cohorts = not cohort_snaps.empty
 
-    # Build figures.
+    # Build figures. The dashboard visualizes library adoption directly; the
+    # broader structural, quality, and Python-version detail (which had its own
+    # charts before) is folded into the agent's grounding data, so the "Ask the
+    # observatory" section can answer those questions from real numbers.
     figs = {
-        "ecosystem": _fig_div(F.ecosystem_size_timeseries(trend_snaps)),
-        "pyversions": _fig_div(F.python_version_distribution(trend_snaps)),
-        "treemap": _fig_div(F.category_treemap(current_adopt)),
         "ranking": _fig_div(F.library_adoption_ranking(current_adopt)),
         "adoption_trend": _fig_div(F.library_adoption_trends(trend_adopt, _TREND_LIBRARIES)),
-        "repro_gauge": _fig_div(F.reproducibility_gauge(current_snaps)),
-        "structural": _fig_div(F.structural_trends(trend_snaps)),
-        "metric_trends": _fig_div(F.metric_trends(trend_snaps, _TREND_METRICS)),
     }
 
     # Library table (latest daily run, top 20).
@@ -201,6 +203,7 @@ def build_site(paths: Paths | None = None, repo_url: str | None = None) -> Path:
         repo_url=repo_url,
         generated_at=dt.datetime.now(dt.UTC).strftime("%Y-%m-%d %H:%M UTC"),
         latest_date=latest_date,
+        agent_space_url=agent_space_url,
         n_days=int(daily_snaps["run_date"].nunique()) if not daily_snaps.empty else 0,
         n_cohorts=int(cohort_snaps["run_date"].nunique()),
         has_cohorts=has_cohorts,

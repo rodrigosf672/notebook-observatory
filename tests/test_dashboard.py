@@ -90,3 +90,15 @@ def test_data_values_still_present(built_site: str) -> None:
 def test_no_unrendered_template_tags(built_site: str) -> None:
     assert "{{" not in built_site
     assert "{%" not in built_site
+
+
+def test_agent_section_present(built_site: str) -> None:
+    # The Ask-the-observatory section and its embed must render.
+    assert 'id="ask"' in built_site
+    assert "Ask the observatory" in built_site
+    assert "hf.space" in built_site  # the agent iframe embed URL
+
+
+def test_removed_sections_absent(built_site: str) -> None:
+    assert "Ecosystem overview" not in built_site
+    assert "Structure &amp; quality" not in built_site

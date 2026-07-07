@@ -113,6 +113,15 @@ table.libs th { color: var(--text-dim); font-weight: 600; }
 table.libs td.num { text-align: right; font-variant-numeric: tabular-nums; }
 .cat-chip { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; }
 
+/* Ask-the-observatory agent */
+.agent-card { padding: 0; overflow: hidden; }
+.agent-frame { width: 100%; height: 640px; border: 0; display: block; background: var(--bg); }
+.agent-placeholder { padding: 40px 24px; color: var(--text-dim); text-align: center; }
+.agent-placeholder a { color: var(--accent); text-decoration: none; }
+.agent-note { color: var(--text-dim); font-size: 0.82rem; margin: 12px 2px 0; line-height: 1.55; }
+.agent-note a { color: var(--accent); text-decoration: none; }
+@media (max-width: 640px) { .agent-frame { height: 560px; } }
+
 /* Footer */
 footer.site { border-top: 1px solid var(--border); padding: 28px 0 48px; color: var(--text-dim); font-size: 0.85rem; }
 footer.site a { color: var(--accent); text-decoration: none; }

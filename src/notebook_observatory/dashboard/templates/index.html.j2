@@ -18,7 +18,7 @@
       <nav class="top">
         <a href="#overview">Overview</a>
         <a href="#libraries">Libraries</a>
-        <a href="#quality">Quality</a>
+        <a href="#ask">Ask</a>
         <a href="#data">Data</a>
         <a href="{{ repo_url }}" target="_blank" rel="noopener">GitHub</a>
         <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">◐ Theme</button>
@@ -59,14 +59,6 @@
     </section>
 
     <section class="panels">
-      <h2 class="section">Ecosystem overview</h2>
-      <p class="section-sub">{% if has_cohorts %}How notebook structure and technology differ across creation-year cohorts ({{ cohort_span }}), and how the latest daily sample decomposes.{% else %}How much of the notebook ecosystem we observed each day, and how it decomposes.{% endif %}</p>
-      <div class="chart-grid">
-        <div class="card wide">{{ figures.ecosystem }}</div>
-        <div class="card">{{ figures.pyversions }}</div>
-        <div class="card">{{ figures.treemap }}</div>
-      </div>
-
       <h2 class="section" id="libraries">Library adoption</h2>
       <p class="section-sub">Which technologies dominate — and which are growing. Adoption is the share of parsed notebooks importing each library.</p>
       <div class="chart-grid">
@@ -90,13 +82,38 @@
         </table>
       </div>
 
-      <h2 class="section" id="quality">Structure &amp; quality</h2>
-      <p class="section-sub">Derived indices capturing how notebooks are written: their size, narrative, reproducibility, and documentation.</p>
-      <div class="chart-grid">
-        <div class="card">{{ figures.repro_gauge }}</div>
-        <div class="card">{{ figures.structural }}</div>
-        <div class="card wide">{{ figures.metric_trends }}</div>
+      <h2 class="section" id="ask">Ask the observatory</h2>
+      <p class="section-sub">
+        A small open-weight language model (Qwen2.5-0.5B-Instruct), grounded in the
+        latest observatory data, answers questions about the notebook ecosystem —
+        which libraries dominate, how adoption shifts by creation-year cohort, and
+        what the dataset does and doesn't cover. It reasons only from the figures
+        released here, so it will say when something is outside the data.
+      </p>
+      {% if agent_space_url %}
+      <div class="card wide agent-card">
+        <iframe
+          src="{{ agent_space_url }}"
+          title="Ask the Notebook Observatory"
+          class="agent-frame"
+          loading="lazy"
+          referrerpolicy="no-referrer"
+          allow="clipboard-write"></iframe>
       </div>
+      <p class="agent-note">
+        The agent runs on a free Hugging Face Space (CPU) and may take a few seconds
+        to reply, or briefly sleep when idle. It is a research demo, not an
+        authoritative source — verify against the
+        <a href="{{ repo_url }}/tree/main/datasets" target="_blank" rel="noopener">datasets</a>.
+        <a href="{{ agent_space_url }}" target="_blank" rel="noopener">Open the agent in a new tab ↗</a>
+      </p>
+      {% else %}
+      <div class="card wide agent-card agent-placeholder">
+        <p>The Q&amp;A agent is being provisioned. Once its Hugging Face Space is live,
+        it will appear here. Meanwhile, explore the
+        <a href="{{ repo_url }}/tree/main/datasets" target="_blank" rel="noopener">datasets</a> directly.</p>
+      </div>
+      {% endif %}
 
       <h2 class="section" id="data">Download the data</h2>
       <p class="section-sub">Every observation is preserved. History is append-only — the dataset grows every day.</p>

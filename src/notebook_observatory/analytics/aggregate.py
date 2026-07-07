@@ -60,7 +60,10 @@ def build_daily_snapshot(observations: pd.DataFrame, run_date: str) -> pd.DataFr
         "notebooks_collected": total,
         "notebooks_parsed": n_parsed,
         "parse_success_rate": round(n_parsed / total, 4) if total else 0.0,
-        "repos_sampled": int(observations["repo_full_name"].nunique()) if total else 0,
+        # Repositories that actually contributed at least one collected notebook
+        # (distinct from the run report's `repos_sampled`, which counts the whole
+        # sampled candidate pool including repos that yielded no notebooks).
+        "repos_contributing": int(observations["repo_full_name"].nunique()) if total else 0,
         "strata_sampled": int(observations["stratum"].nunique()) if total else 0,
     }
 

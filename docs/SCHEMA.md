@@ -75,7 +75,8 @@ One row per run date (51 columns). Key columns:
 | `run_date` | ISO date. |
 | `notebooks_collected`, `notebooks_parsed` | Sample sizes. |
 | `parse_success_rate` | Parsed / collected. |
-| `repos_sampled`, `strata_sampled` | Diversity of the run. |
+| `repos_contributing` | Distinct repos that yielded ≥1 collected notebook (≤ the run report's `repos_sampled` candidate pool). |
+| `strata_sampled` | Number of distinct sampling strata represented. |
 | `<metric>_mean`, `<metric>_median` | Mean & median of each of the ten metrics. |
 | `mean_total_cells`, `median_total_cells`, `mean_code_cells`, `mean_markdown_cells`, `mean_total_lines`, `mean_imports`, `mean_outputs` | Structural aggregates. |
 | `pct_with_output`, `pct_executed_in_order`, `pct_with_widgets` | Behavioral shares. |

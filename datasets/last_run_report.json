@@ -1,7 +1,7 @@
 {
   "run_date": "2026-07-07",
   "notebooks_collected": 400,
-  "notebooks_parsed": 398,
+  "notebooks_parsed": 400,
   "repos_sampled": 147,
   "strata": [
     "age:created_2019",
@@ -16,66 +16,66 @@
     {
       "library": "numpy",
       "category": "array",
-      "adoption_pct": 59.799,
-      "notebook_count": 238
+      "adoption_pct": 68.25,
+      "notebook_count": 273
     },
     {
       "library": "matplotlib",
       "category": "plotting",
-      "adoption_pct": 45.226,
-      "notebook_count": 180
+      "adoption_pct": 55.25,
+      "notebook_count": 221
     },
     {
       "library": "pandas",
       "category": "array",
-      "adoption_pct": 29.899,
-      "notebook_count": 119
-    },
-    {
-      "library": "pytorch",
-      "category": "deep_learning",
-      "adoption_pct": 17.588,
-      "notebook_count": 70
-    },
-    {
-      "library": "tensorflow",
-      "category": "deep_learning",
-      "adoption_pct": 12.814,
-      "notebook_count": 51
+      "adoption_pct": 40.25,
+      "notebook_count": 161
     },
     {
       "library": "scikit_learn",
       "category": "ml",
-      "adoption_pct": 12.312,
-      "notebook_count": 49
+      "adoption_pct": 19.75,
+      "notebook_count": 79
     },
     {
       "library": "seaborn",
       "category": "plotting",
-      "adoption_pct": 8.291,
-      "notebook_count": 33
+      "adoption_pct": 16.25,
+      "notebook_count": 65
+    },
+    {
+      "library": "pytorch",
+      "category": "deep_learning",
+      "adoption_pct": 14.0,
+      "notebook_count": 56
+    },
+    {
+      "library": "tensorflow",
+      "category": "deep_learning",
+      "adoption_pct": 13.0,
+      "notebook_count": 52
     },
     {
       "library": "scipy",
       "category": "scientific",
-      "adoption_pct": 7.538,
-      "notebook_count": 30
+      "adoption_pct": 12.25,
+      "notebook_count": 49
     },
     {
       "library": "keras",
       "category": "deep_learning",
-      "adoption_pct": 5.779,
+      "adoption_pct": 5.75,
       "notebook_count": 23
     },
     {
       "library": "requests",
       "category": "data_io",
-      "adoption_pct": 3.769,
-      "notebook_count": 15
+      "adoption_pct": 4.0,
+      "notebook_count": 16
     }
   ],
   "client_stats": {
-    "core_requests": 518,
+    "core_requests": 527,
     "search_requests": 7,
     "cache_hits": 0,
     "conditional_not_modified": 0,

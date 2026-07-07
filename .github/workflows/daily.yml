@@ -52,8 +52,8 @@ jobs:
       - name: Run daily collection
         id: collect
         env:
-          # The default GITHUB_TOKEN gives the workflow 5000 core + 30 search
-          # requests/hour — sufficient for the configured collection budget.
+          # The default GITHUB_TOKEN gives the workflow 5000 core requests/hour
+          # and 30 search requests/minute — sufficient for the collection budget.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NBOBS_TARGET_NOTEBOOKS: "400"
           NBOBS_REPO_SAMPLE: "150"

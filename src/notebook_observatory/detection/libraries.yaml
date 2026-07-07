@@ -1,0 +1,73 @@
+# Library detection registry
+# --------------------------------------------------------------------------
+# Each entry maps a canonical library to the set of top-level import module
+# names that indicate its use, plus a category used for aggregate "family"
+# metrics. To extend detection, add an entry here — no code change required.
+#
+# Fields per library:
+#   modules:  list of top-level import names (what `import X` / `from X import`
+#             yields). Case-sensitive; matched against parser output.
+#   category: one of the categories below (drives family roll-ups).
+#   pypi:     canonical PyPI distribution name (optional; for enrichment).
+#
+# Categories:
+#   array        - numerical arrays / dataframes
+#   scientific   - scientific computing / stats
+#   ml           - classical ML
+#   deep_learning- deep learning frameworks
+#   plotting     - static/interactive visualization
+#   interactive  - widgets / app / dashboard frameworks
+#   notebook_tech- notebook runtimes & publishing (marimo, voila, quarto, panel)
+#   llm          - LLM / agent tooling
+#   data_io      - data access / query engines
+
+libraries:
+  numpy:        {modules: [numpy], category: array, pypi: numpy}
+  pandas:       {modules: [pandas], category: array, pypi: pandas}
+  polars:       {modules: [polars], category: array, pypi: polars}
+  scipy:        {modules: [scipy], category: scientific, pypi: scipy}
+  statsmodels:  {modules: [statsmodels], category: scientific, pypi: statsmodels}
+  sympy:        {modules: [sympy], category: scientific, pypi: sympy}
+
+  scikit_learn: {modules: [sklearn], category: ml, pypi: scikit-learn}
+  xgboost:      {modules: [xgboost], category: ml, pypi: xgboost}
+  lightgbm:     {modules: [lightgbm], category: ml, pypi: lightgbm}
+
+  tensorflow:   {modules: [tensorflow], category: deep_learning, pypi: tensorflow}
+  keras:        {modules: [keras], category: deep_learning, pypi: keras}
+  pytorch:      {modules: [torch], category: deep_learning, pypi: torch}
+  pytorch_lightning: {modules: [pytorch_lightning, lightning], category: deep_learning, pypi: lightning}
+  jax:          {modules: [jax, flax], category: deep_learning, pypi: jax}
+  transformers: {modules: [transformers], category: deep_learning, pypi: transformers}
+
+  matplotlib:   {modules: [matplotlib, pylab], category: plotting, pypi: matplotlib}
+  seaborn:      {modules: [seaborn], category: plotting, pypi: seaborn}
+  plotly:       {modules: [plotly], category: plotting, pypi: plotly}
+  altair:       {modules: [altair], category: plotting, pypi: altair}
+  bokeh:        {modules: [bokeh], category: plotting, pypi: bokeh}
+  holoviews:    {modules: [holoviews], category: plotting, pypi: holoviews}
+  plotnine:     {modules: [plotnine], category: plotting, pypi: plotnine}
+
+  ipywidgets:   {modules: [ipywidgets], category: interactive, pypi: ipywidgets}
+  anywidget:    {modules: [anywidget], category: interactive, pypi: anywidget}
+  ipyleaflet:   {modules: [ipyleaflet], category: interactive, pypi: ipyleaflet}
+  streamlit:    {modules: [streamlit], category: interactive, pypi: streamlit}
+
+  marimo:       {modules: [marimo], category: notebook_tech, pypi: marimo}
+  voila:        {modules: [voila], category: notebook_tech, pypi: voila}
+  panel:        {modules: [panel], category: notebook_tech, pypi: panel}
+  quarto:       {modules: [quarto], category: notebook_tech, pypi: quarto}
+  papermill:    {modules: [papermill], category: notebook_tech, pypi: papermill}
+  nbconvert:    {modules: [nbconvert], category: notebook_tech, pypi: nbconvert}
+
+  jupyter_ai:   {modules: [jupyter_ai], category: llm, pypi: jupyter-ai}
+  langchain:    {modules: [langchain, langchain_core, langchain_community], category: llm, pypi: langchain}
+  llamaindex:   {modules: [llama_index], category: llm, pypi: llama-index}
+  openai:       {modules: [openai], category: llm, pypi: openai}
+  anthropic:    {modules: [anthropic], category: llm, pypi: anthropic}
+
+  duckdb:       {modules: [duckdb], category: data_io, pypi: duckdb}
+  pyarrow:      {modules: [pyarrow], category: data_io, pypi: pyarrow}
+  sqlalchemy:   {modules: [sqlalchemy], category: data_io, pypi: sqlalchemy}
+  requests:     {modules: [requests], category: data_io, pypi: requests}
+  dask:         {modules: [dask], category: data_io, pypi: dask}

@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Tooling caches
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local caches (HTTP cache lives here; never committed)
+.cache/
+*.log
+
+# OS
+.DS_Store
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Datasets are committed on purpose — do NOT ignore datasets/
+# Site is generated but committed for Pages fallback; workflow rebuilds it.
+
+# The DuckDB file is a rebuilt view-layer over the Parquet datasets — derived,
+# not source. Regenerate with `nbobs aggregate` or DatasetStore.rebuild_duckdb().
+datasets/observatory.duckdb

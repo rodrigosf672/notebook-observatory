@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Notebook Observatory — a daily census of computational notebooks</title>
+  <meta name="description" content="A continuously updated public observatory of the computational notebook ecosystem: growth, libraries, widgets, Python versions, reproducibility, and more." />
+  <meta property="og:title" content="Notebook Observatory" />
+  <meta property="og:description" content="A daily census of the public computational notebook ecosystem." />
+  <meta property="og:type" content="website" />
+  <style>{{ inline_css }}</style>
+  <script src="{{ plotly_src }}" charset="utf-8"></script>
+</head>
+<body>
+  <header class="site">
+    <div class="bar">
+      <div class="brand"><span class="dot"></span> Notebook Observatory</div>
+      <nav class="top">
+        <a href="#overview">Overview</a>
+        <a href="#libraries">Libraries</a>
+        <a href="#quality">Quality</a>
+        <a href="#data">Data</a>
+        <a href="{{ repo_url }}" target="_blank" rel="noopener">GitHub</a>
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">◐ Theme</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero" id="overview">
+      <span class="badge">Updated {{ generated_at }} · {{ n_days }} day{{ 's' if n_days != 1 else '' }} of history</span>
+      <h1>A daily census of the world's computational notebooks</h1>
+      <p class="lead">
+        Notebook Observatory samples public Jupyter notebooks from GitHub every day,
+        parses their structure, detects the libraries they use, and publishes an
+        ever-growing longitudinal dataset. Think <em>Our World in Data</em>, for notebooks.
+      </p>
+      <div class="updated">Latest run: <strong>{{ latest_date }}</strong></div>
+
+      <div class="stat-grid">
+        {% for s in stat_cards %}
+        <div class="stat">
+          <div class="value">{{ s.value }}</div>
+          <div class="label">{{ s.label }}</div>
+          {% if s.sub %}<div class="sub">{{ s.sub }}</div>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="panels">
+      <h2 class="section">Ecosystem overview</h2>
+      <p class="section-sub">How much of the notebook ecosystem we observed each day, and how it decomposes.</p>
+      <div class="chart-grid">
+        <div class="card wide">{{ figures.ecosystem }}</div>
+        <div class="card">{{ figures.pyversions }}</div>
+        <div class="card">{{ figures.treemap }}</div>
+      </div>
+
+      <h2 class="section" id="libraries">Library adoption</h2>
+      <p class="section-sub">Which technologies dominate — and which are growing. Adoption is the share of parsed notebooks importing each library.</p>
+      <div class="chart-grid">
+        <div class="card">{{ figures.ranking }}</div>
+        <div class="card">{{ figures.adoption_trend }}</div>
+      </div>
+
+      <div class="card wide" style="padding:20px 22px;">
+        <table class="libs">
+          <thead><tr><th>Library</th><th>Category</th><th class="num">Adoption</th><th class="num">Notebooks</th></tr></thead>
+          <tbody>
+          {% for row in library_table %}
+            <tr>
+              <td>{{ row.library }}</td>
+              <td><span class="cat-chip" style="background:{{ row.color }}22;color:{{ row.color }}">{{ row.category }}</span></td>
+              <td class="num">{{ '%.1f'|format(row.adoption_pct) }}%</td>
+              <td class="num">{{ row.notebook_count }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="section" id="quality">Structure &amp; quality</h2>
+      <p class="section-sub">Derived indices capturing how notebooks are written: their size, narrative, reproducibility, and documentation.</p>
+      <div class="chart-grid">
+        <div class="card">{{ figures.repro_gauge }}</div>
+        <div class="card">{{ figures.structural }}</div>
+        <div class="card wide">{{ figures.metric_trends }}</div>
+      </div>
+
+      <h2 class="section" id="data">Download the data</h2>
+      <p class="section-sub">Every observation is preserved. History is append-only — the dataset grows every day.</p>
+      <div class="downloads">
+        <a href="{{ data_links.snapshots_csv }}" download>⬇ daily_snapshots.csv</a>
+        <a href="{{ data_links.adoption_csv }}" download>⬇ library_adoption.csv</a>
+        <a href="{{ repo_url }}/tree/main/datasets" target="_blank" rel="noopener">⬇ Full Parquet datasets (GitHub)</a>
+        <a href="{{ repo_url }}/blob/main/docs/SCHEMA.md" target="_blank" rel="noopener">📄 Dataset schema</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site">
+    <div class="container">
+      <p>
+        <strong>Notebook Observatory</strong> — an open, automated, longitudinal census of public computational notebooks.
+        Data collected from the GitHub API under a stratified daily sampling design; see the
+        <a href="{{ repo_url }}/blob/main/docs/METHODOLOGY.md">methodology</a> and
+        <a href="{{ repo_url }}/blob/main/docs/METRICS.md">metric definitions</a> for sampling caveats and limitations.
+      </p>
+      <p>Generated {{ generated_at }} · MIT licensed · <a href="{{ repo_url }}">source on GitHub</a></p>
+    </div>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const el = document.documentElement;
+      const next = el.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      el.setAttribute('data-theme', next);
+      try { localStorage.setItem('nbobs-theme', next); } catch (e) {}
+    }
+    (function () {
+      try {
+        const saved = localStorage.getItem('nbobs-theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

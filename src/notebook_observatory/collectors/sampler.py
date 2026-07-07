@@ -230,6 +230,82 @@ def build_plan(run_date: dt.date | None = None, seed_offset: int = 0) -> Samplin
     return plan
 
 
+# Earliest creation year with enough public notebooks to sample meaningfully.
+# GitHub's Jupyter-Notebook population is negligible before 2013.
+EARLIEST_COHORT_YEAR = 2013
+
+# Star buckets used within a single creation-year cohort. Kept coarse (three
+# bands) so each band still returns results even for sparse early years.
+COHORT_STAR_BUCKETS: list[tuple[str, str]] = [
+    ("stars:>50", "notable"),
+    ("stars:5..50", "mid"),
+    ("stars:0..4", "long_tail"),
+]
+
+
+def build_cohort_plan(year: int, seed_offset: int = 0) -> SamplingPlan:
+    """Build a sampling plan for a single **creation-year cohort**.
+
+    Unlike :func:`build_plan` (which samples the *current* ecosystem for a daily
+    census), this plan samples repositories **created in a specific year**,
+    stratified by popularity and topic within that year. It powers the
+    historical backfill: running it for 2013..present yields one cohort per year.
+
+    Important: GitHub serves the *current* content of each notebook, so a cohort
+    measures "notebooks created in year *Y* as they exist today", not a
+    historical snapshot of that year. See ``docs/METHODOLOGY.md``.
+
+    Args:
+        year: Repository creation year to sample.
+        seed_offset: Extra entropy so repeated cohort runs differ.
+
+    Returns:
+        A :class:`SamplingPlan` whose ``run_date`` is ``year-01-01`` (used as the
+        cohort's key in the longitudinal store).
+    """
+    cohort_date = dt.date(year, 1, 1)
+    seed = _date_seed(cohort_date, seed_offset)
+    rng = random.Random(seed)
+    created = f"created:{year}-01-01..{year}-12-31"
+
+    strategies: list[SamplingStrategy] = []
+
+    # Popularity strata within the year.
+    for star_q, label in COHORT_STAR_BUCKETS:
+        strategies.append(
+            SamplingStrategy(
+                name=f"cohort_star_{label}",
+                stratum=f"stars:{label}",
+                query=f"{LANG_FILTER} {created} {star_q}",
+                sort="stars",
+                order="desc",
+            )
+        )
+
+    # Two rotating topics for within-year diversity (rotation keyed on the year
+    # so different cohorts probe different topics but each is reproducible).
+    for k in range(2):
+        topic = ROTATING_TOPICS[(year * 2 + k) % len(ROTATING_TOPICS)]
+        strategies.append(
+            SamplingStrategy(
+                name=f"cohort_topic_{k}",
+                stratum=f"topic:{topic}",
+                query=f"{LANG_FILTER} {created} topic:{topic}",
+                sort=None,
+            )
+        )
+
+    rng.shuffle(strategies)
+    plan = SamplingPlan(run_date=cohort_date, seed=seed, strategies=strategies)
+    logger.info(
+        "Cohort plan for %d (seed=%d): %s",
+        year,
+        seed,
+        [s.name for s in strategies],
+    )
+    return plan
+
+
 def iter_search_pages(
     strategy: SamplingStrategy, *, pages: int, per_page: int, seed: int
 ) -> Iterator[tuple[int, int]]:

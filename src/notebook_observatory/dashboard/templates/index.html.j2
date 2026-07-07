@@ -28,13 +28,23 @@
 
   <main class="container">
     <section class="hero" id="overview">
-      <span class="badge">Updated {{ generated_at }} · {{ n_days }} day{{ 's' if n_days != 1 else '' }} of history</span>
+      <span class="badge">Updated {{ generated_at }} · {{ n_days }} day{{ 's' if n_days != 1 else '' }} of daily history{% if has_cohorts %} · {{ n_cohorts }} historical cohorts ({{ cohort_span }}){% endif %}</span>
       <h1>A daily census of the world's computational notebooks</h1>
       <p class="lead">
         Notebook Observatory samples public Jupyter notebooks from GitHub every day,
         parses their structure, detects the libraries they use, and publishes an
         ever-growing longitudinal dataset. Think <em>Our World in Data</em>, for notebooks.
       </p>
+      {% if has_cohorts %}
+      <p class="lead" style="font-size:0.92rem;opacity:0.82;">
+        The trend charts below use a <strong>historical backfill</strong> spanning
+        {{ cohort_span }}: for each year, a stratified sample of notebooks whose
+        repository was <em>created</em> that year, measured as they exist today.
+        This is a creation-year cohort view — see the
+        <a href="{{ repo_url }}/blob/main/docs/METHODOLOGY.md" target="_blank" rel="noopener">methodology</a>
+        for its survivorship caveat.
+      </p>
+      {% endif %}
       <div class="updated">Latest run: <strong>{{ latest_date }}</strong></div>
 
       <div class="stat-grid">
@@ -50,7 +60,7 @@
 
     <section class="panels">
       <h2 class="section">Ecosystem overview</h2>
-      <p class="section-sub">How much of the notebook ecosystem we observed each day, and how it decomposes.</p>
+      <p class="section-sub">{% if has_cohorts %}How notebook structure and technology differ across creation-year cohorts ({{ cohort_span }}), and how the latest daily sample decomposes.{% else %}How much of the notebook ecosystem we observed each day, and how it decomposes.{% endif %}</p>
       <div class="chart-grid">
         <div class="card wide">{{ figures.ecosystem }}</div>
         <div class="card">{{ figures.pyversions }}</div>

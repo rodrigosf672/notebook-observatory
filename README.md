@@ -168,6 +168,10 @@ nbobs dashboard
 # Do both
 nbobs all
 
+# Backfill historical creation-year cohorts (2013 -> present) for instant depth
+nbobs backfill                       # all years
+nbobs backfill --start-year 2018     # from 2018 onward
+
 # Re-aggregate a stored date (e.g. after changing a metric) without re-collecting
 nbobs aggregate --date 2026-07-07
 ```

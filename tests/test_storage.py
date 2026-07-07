@@ -109,6 +109,30 @@ def test_duckdb_rebuild_and_query(tmp_path: Path, fixtures: Path) -> None:
     assert int(out["n"].iloc[0]) == len(df)
 
 
+def test_cohort_collection_type_threads_through(tmp_path: Path, fixtures: Path) -> None:
+    # Build observations tagged as a cohort and confirm the label reaches the
+    # snapshot and adoption tables.
+    from notebook_observatory.analytics.records import build_observation
+
+    rows = []
+    for name in ["good.ipynb", "messy.ipynb"]:
+        raw = (fixtures / name).read_text(encoding="utf-8")
+        rows.append(build_observation(_fake_collected(raw), "2018-01-01", collection_type="cohort"))
+    df = pd.DataFrame(rows)
+    assert (df["collection_type"] == "cohort").all()
+    snap, adopt = aggregate_day(df, "2018-01-01")
+    assert snap.iloc[0]["collection_type"] == "cohort"
+    assert (adopt["collection_type"] == "cohort").all()
+
+
+def test_daily_is_default_collection_type(fixtures: Path) -> None:
+    from notebook_observatory.analytics.records import build_observation
+
+    raw = (fixtures / "good.ipynb").read_text(encoding="utf-8")
+    row = build_observation(_fake_collected(raw), "2026-07-07")
+    assert row["collection_type"] == "daily"
+
+
 def test_aggregate_snapshot_fields(tmp_path: Path, fixtures: Path) -> None:
     df = _observations_df(fixtures, "2026-07-01")
     snap, adopt = aggregate_day(df, "2026-07-01")

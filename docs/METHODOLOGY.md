@@ -108,6 +108,36 @@ immutable by construction.
 - **Default-branch snapshot.** We read the default branch at collection time;
   notebooks on other branches or historical states are not captured.
 
+## Historical backfill (creation-year cohorts)
+
+Beyond the forward-looking daily census, the observatory can **backfill history**
+so the longitudinal charts have depth from day one. Because there is no way to
+retrieve what a notebook looked like in the past, the backfill uses a
+**creation-year cohort** design (`nbobs backfill`, `collectors.sampler.build_cohort_plan`,
+`pipeline.run_cohort`):
+
+- For each year from **2013** (the earliest with a meaningful public
+  Jupyter-Notebook population) to the present, we sample notebooks whose
+  **repository was created in that year** (`created:YEAR-01-01..YEAR-12-31`),
+  stratified by three star bands and two rotating topics.
+- Each cohort is stored as a snapshot keyed on `YEAR-01-01` and tagged
+  `collection_type="cohort"` (the daily census is tagged `"daily"`), so the two
+  modes are always separable in the datasets and on the dashboard.
+- Backfill runs newest-year-first and shares one rate-limit budget across years,
+  so a partial run still captures the most data-rich recent cohorts.
+
+**What a cohort measures — and its limits.** A cohort is *"notebooks created in
+year Y, as they exist on GitHub today."* It is **not** a snapshot of what those
+notebooks looked like in year Y, and it is subject to **survivorship bias**:
+repositories deleted or made private since then are invisible, so older cohorts
+over-represent notebooks that were maintained or preserved. Absolute per-year
+sample sizes reflect the collection budget, not the true size of each vintage
+(which we measured separately: ~2.6k qualifying repos in 2014 rising past 2M in
+2025). Read cohort trends as *how the practices of surviving notebooks differ by
+vintage* — e.g. the rise of deep-learning frameworks in more recent cohorts —
+not as a retrospective time machine. These caveats are surfaced directly on the
+dashboard whenever cohort data is shown.
+
 ## Roadmap
 
 - **Enrichment:** optional PyPI/BigQuery download-volume context for detected libraries.

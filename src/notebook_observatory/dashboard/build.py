@@ -62,11 +62,14 @@ def _fig_div(fig: Any) -> str:
     return html
 
 
-def _stat_cards(snapshots: Any, adoption: Any, repo_url: str) -> list[dict[str, str]]:
-    latest = snapshots.sort_values("run_date").iloc[-1]
+def _stat_cards(
+    current: Any, current_adopt: Any, repo_url: str, all_snaps: Any
+) -> list[dict[str, str]]:
+    latest = current.sort_values("run_date").iloc[-1]
     latest_date = latest["run_date"]
-    total_collected = int(snapshots["notebooks_collected"].sum())
-    latest_adopt = adoption[adoption["run_date"] == latest_date]
+    # All-time total spans every collection mode (daily + cohort backfill).
+    total_collected = int(all_snaps["notebooks_collected"].sum())
+    latest_adopt = current_adopt[current_adopt["run_date"] == latest_date]
     top = (
         latest_adopt.sort_values("adoption_pct", ascending=False).iloc[0]
         if len(latest_adopt)
@@ -121,22 +124,44 @@ def build_site(paths: Paths | None = None, repo_url: str | None = None) -> Path:
 
     paths.site.mkdir(parents=True, exist_ok=True)
 
+    # Split the two collection modes. "cohort" rows are the historical
+    # creation-year backfill (2013..present) and form the real longitudinal
+    # series; "daily" rows are the live daily census. Older snapshots without a
+    # collection_type are treated as daily.
+    if "collection_type" not in snapshots.columns:
+        snapshots["collection_type"] = "daily"
+    if "collection_type" not in adoption.columns:
+        adoption["collection_type"] = "daily"
+    cohort_snaps = snapshots[snapshots["collection_type"] == "cohort"].sort_values("run_date")
+    daily_snaps = snapshots[snapshots["collection_type"] == "daily"].sort_values("run_date")
+    cohort_adopt = adoption[adoption["collection_type"] == "cohort"]
+    daily_adopt = adoption[adoption["collection_type"] == "daily"]
+
+    # Longitudinal charts prefer the cohort series (multi-year); the daily
+    # series is used for current-state cards. Fall back to daily if no cohorts.
+    trend_snaps = cohort_snaps if not cohort_snaps.empty else daily_snaps
+    trend_adopt = cohort_adopt if not cohort_adopt.empty else daily_adopt
+    # Current-state figures/cards use the latest daily run (fallback: latest overall).
+    current_snaps = daily_snaps if not daily_snaps.empty else snapshots
+    current_adopt = daily_adopt if not daily_adopt.empty else adoption
+    has_cohorts = not cohort_snaps.empty
+
     # Build figures.
     figs = {
-        "ecosystem": _fig_div(F.ecosystem_size_timeseries(snapshots)),
-        "pyversions": _fig_div(F.python_version_distribution(snapshots)),
-        "treemap": _fig_div(F.category_treemap(adoption)),
-        "ranking": _fig_div(F.library_adoption_ranking(adoption)),
-        "adoption_trend": _fig_div(F.library_adoption_trends(adoption, _TREND_LIBRARIES)),
-        "repro_gauge": _fig_div(F.reproducibility_gauge(snapshots)),
-        "structural": _fig_div(F.structural_trends(snapshots)),
-        "metric_trends": _fig_div(F.metric_trends(snapshots, _TREND_METRICS)),
+        "ecosystem": _fig_div(F.ecosystem_size_timeseries(trend_snaps)),
+        "pyversions": _fig_div(F.python_version_distribution(trend_snaps)),
+        "treemap": _fig_div(F.category_treemap(current_adopt)),
+        "ranking": _fig_div(F.library_adoption_ranking(current_adopt)),
+        "adoption_trend": _fig_div(F.library_adoption_trends(trend_adopt, _TREND_LIBRARIES)),
+        "repro_gauge": _fig_div(F.reproducibility_gauge(current_snaps)),
+        "structural": _fig_div(F.structural_trends(trend_snaps)),
+        "metric_trends": _fig_div(F.metric_trends(trend_snaps, _TREND_METRICS)),
     }
 
-    # Library table (latest day, top 20).
-    latest_date = snapshots.sort_values("run_date").iloc[-1]["run_date"]
+    # Library table (latest daily run, top 20).
+    latest_date = current_snaps.sort_values("run_date").iloc[-1]["run_date"]
     latest_adopt = (
-        adoption[adoption["run_date"] == latest_date]
+        current_adopt[current_adopt["run_date"] == latest_date]
         .sort_values("adoption_pct", ascending=False)
         .head(20)
     )
@@ -169,8 +194,15 @@ def build_site(paths: Paths | None = None, repo_url: str | None = None) -> Path:
         repo_url=repo_url,
         generated_at=dt.datetime.now(dt.UTC).strftime("%Y-%m-%d %H:%M UTC"),
         latest_date=latest_date,
-        n_days=int(snapshots["run_date"].nunique()),
-        stat_cards=_stat_cards(snapshots, adoption, repo_url),
+        n_days=int(daily_snaps["run_date"].nunique()) if not daily_snaps.empty else 0,
+        n_cohorts=int(cohort_snaps["run_date"].nunique()),
+        has_cohorts=has_cohorts,
+        cohort_span=(
+            f"{cohort_snaps['run_date'].min()[:4]}–{cohort_snaps['run_date'].max()[:4]}"
+            if has_cohorts
+            else ""
+        ),
+        stat_cards=_stat_cards(current_snaps, current_adopt, repo_url, snapshots),
         figures=figs,
         library_table=library_table,
         data_links={

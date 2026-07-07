@@ -171,10 +171,23 @@ class NotebookCollector:
         rng.shuffle(entries)
         return entries[: self.config.max_notebooks_per_repo]
 
-    def collect(self, run_date: dt.date | None = None) -> CollectionResult:
-        """Execute a full collection run and return the result."""
-        run_date = run_date or dt.datetime.now(dt.UTC).date()
-        plan = build_plan(run_date=run_date, seed_offset=self.config.seed)
+    def collect(
+        self, run_date: dt.date | None = None, plan: SamplingPlan | None = None
+    ) -> CollectionResult:
+        """Execute a full collection run and return the result.
+
+        Args:
+            run_date: Date to collect for (defaults to today, UTC). Ignored when
+                ``plan`` is supplied — the plan's own ``run_date`` is used.
+            plan: An explicit sampling plan (e.g. a creation-year cohort from
+                :func:`build_cohort_plan`). When omitted, the standard daily
+                :func:`build_plan` is used.
+        """
+        if plan is None:
+            run_date = run_date or dt.datetime.now(dt.UTC).date()
+            plan = build_plan(run_date=run_date, seed_offset=self.config.seed)
+        else:
+            run_date = plan.run_date
         rng = random.Random(plan.seed)
 
         repos = self._sample_repositories(plan)

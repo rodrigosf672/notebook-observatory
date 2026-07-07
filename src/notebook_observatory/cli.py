@@ -26,9 +26,10 @@ import sys
 
 from . import __version__
 from .analytics.aggregate import aggregate_day
+from .collectors.sampler import EARLIEST_COHORT_YEAR
 from .dashboard.build import build_site
 from .logging_utils import get_logger
-from .pipeline import run_collection
+from .pipeline import run_backfill, run_collection
 from .storage.datasets import DatasetStore
 
 logger = get_logger(__name__)
@@ -70,6 +71,18 @@ def _cmd_aggregate(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_backfill(args: argparse.Namespace) -> int:
+    """Backfill historical creation-year cohorts (newest year first)."""
+    reports = run_backfill(start_year=args.start_year, end_year=args.end_year)
+    total = sum(r.notebooks_collected for r in reports)
+    logger.info("Backfill complete: %d cohorts, %d notebooks total.", len(reports), total)
+    for r in reports:
+        logger.info(
+            "  %s: %d collected, %d parsed", r.run_date, r.notebooks_collected, r.notebooks_parsed
+        )
+    return 0
+
+
 def _cmd_dashboard(args: argparse.Namespace) -> int:
     out = build_site(repo_url=args.repo_url)
     logger.info("Dashboard built at %s", out)
@@ -100,6 +113,17 @@ def build_parser() -> argparse.ArgumentParser:
     p_agg = sub.add_parser("aggregate", help="Recompute aggregates from stored observations.")
     p_agg.add_argument("--date", help=date_help)
     p_agg.set_defaults(func=_cmd_aggregate)
+
+    p_bf = sub.add_parser(
+        "backfill", help="Collect historical creation-year cohorts (2013..present)."
+    )
+    p_bf.add_argument(
+        "--start-year", type=int, default=EARLIEST_COHORT_YEAR, help="Earliest creation year."
+    )
+    p_bf.add_argument(
+        "--end-year", type=int, default=None, help="Latest creation year (default: current)."
+    )
+    p_bf.set_defaults(func=_cmd_backfill)
 
     p_dash = sub.add_parser("dashboard", help="Rebuild the static dashboard.")
     p_dash.add_argument("--repo-url", default=repo_url_default)

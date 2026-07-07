@@ -12,7 +12,8 @@ the atomic dataset from which all aggregates are derived.
 ### Provenance
 | Column | Type | Description |
 |---|---|---|
-| `run_date` | str | Collection date (ISO). |
+| `run_date` | str | Collection date (ISO). For historical cohorts this is `YEAR-01-01`. |
+| `collection_type` | str | `"daily"` (live census) or `"cohort"` (creation-year backfill). |
 | `repo_full_name` | str | `owner/name`. |
 | `path` | str | Notebook path within the repo. |
 | `ref` | str | Git ref (default branch). |
@@ -72,7 +73,8 @@ One row per run date (51 columns). Key columns:
 
 | Column | Description |
 |---|---|
-| `run_date` | ISO date. |
+| `run_date` | ISO date (or `YEAR-01-01` for a cohort). |
+| `collection_type` | `"daily"` or `"cohort"`. |
 | `notebooks_collected`, `notebooks_parsed` | Sample sizes. |
 | `parse_success_rate` | Parsed / collected. |
 | `repos_contributing` | Distinct repos that yielded ≥1 collected notebook (≤ the run report's `repos_sampled` candidate pool). |

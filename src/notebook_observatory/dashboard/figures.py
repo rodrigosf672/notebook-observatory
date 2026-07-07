@@ -68,9 +68,17 @@ def _apply(fig: go.Figure, title: str) -> go.Figure:
 
 
 def ecosystem_size_timeseries(snapshots: pd.DataFrame) -> go.Figure:
-    """Notebooks collected & parsed per run date (sampling volume over time)."""
+    """Notebooks collected & parsed per run date (sampling volume over time).
+
+    When the series is the creation-year cohort backfill, the x-axis is the
+    notebook creation year and the title reflects that.
+    """
     fig = go.Figure()
     df = snapshots.sort_values("run_date")
+    is_cohort = (
+        "collection_type" in df.columns and (df["collection_type"] == "cohort").all() and len(df)
+    )
+    title = "Sample volume by creation-year cohort" if is_cohort else "Daily sample volume"
     fig.add_trace(
         go.Scatter(
             x=df["run_date"],
@@ -91,7 +99,7 @@ def ecosystem_size_timeseries(snapshots: pd.DataFrame) -> go.Figure:
             line=dict(width=2, color=PALETTE[1], dash="dot"),
         )
     )
-    return _apply(fig, "Daily sample volume")
+    return _apply(fig, title)
 
 
 def library_adoption_ranking(adoption: pd.DataFrame, top_n: int = 15) -> go.Figure:
@@ -122,9 +130,18 @@ def library_adoption_ranking(adoption: pd.DataFrame, top_n: int = 15) -> go.Figu
 
 
 def library_adoption_trends(adoption: pd.DataFrame, libraries: list[str]) -> go.Figure:
-    """Stacked area of selected libraries' adoption over time."""
+    """Per-library adoption over time as independent lines.
+
+    Uses unstacked lines (not stacked area) because each library's adoption is
+    an independent share of parsed notebooks — a notebook can import several
+    libraries, so the percentages do not sum to 100 and must not be stacked.
+    Over the cohort backfill this reads as "how adoption of each library differs
+    by notebook creation year".
+    """
     fig = go.Figure()
     df = adoption[adoption["library"].isin(libraries)].sort_values("run_date")
+    n_points = df["run_date"].nunique()
+    mode = "lines+markers" if n_points <= 30 else "lines"
     for i, lib in enumerate(libraries):
         sub = df[df["library"] == lib]
         if sub.empty:
@@ -133,13 +150,15 @@ def library_adoption_trends(adoption: pd.DataFrame, libraries: list[str]) -> go.
             go.Scatter(
                 x=sub["run_date"],
                 y=sub["adoption_pct"],
-                name=lib,
-                mode="lines",
-                stackgroup="one",
-                line=dict(width=0.5, color=PALETTE[i % len(PALETTE)]),
+                name=lib.replace("_", "-"),
+                mode=mode,
+                line=dict(width=2, color=PALETTE[i % len(PALETTE)]),
+                hovertemplate="%{x}<br>" + lib.replace("_", "-") + ": %{y:.1f}%<extra></extra>",
             )
         )
-    return _apply(fig, "Library adoption over time (stacked %)")
+    fig = _apply(fig, "Library adoption over time (% of parsed notebooks)")
+    fig.update_yaxes(title="% of parsed notebooks", ticksuffix="%")
+    return fig
 
 
 def category_treemap(adoption: pd.DataFrame) -> go.Figure:

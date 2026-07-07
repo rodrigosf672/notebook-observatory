@@ -5,7 +5,9 @@ from __future__ import annotations
 import datetime as dt
 
 from notebook_observatory.collectors.sampler import (
+    EARLIEST_COHORT_YEAR,
     STAR_BUCKETS,
+    build_cohort_plan,
     build_plan,
     iter_search_pages,
 )
@@ -49,6 +51,33 @@ def test_plan_always_has_core_strategies() -> None:
     assert "size_bucket" in names
     assert "topic" in names
     assert sum(1 for n in names if n.startswith("star_bucket")) == 3
+
+
+def test_cohort_plan_scopes_all_queries_to_year() -> None:
+    plan = build_cohort_plan(2018)
+    assert plan.run_date.isoformat() == "2018-01-01"
+    assert plan.strategies
+    for s in plan.strategies:
+        assert "created:2018-01-01..2018-12-31" in s.query
+        assert 'language:"Jupyter Notebook"' in s.query
+
+
+def test_cohort_plan_is_deterministic_and_varies_by_year() -> None:
+    a = [s.query for s in build_cohort_plan(2020).strategies]
+    b = [s.query for s in build_cohort_plan(2020).strategies]
+    c = [s.query for s in build_cohort_plan(2021).strategies]
+    assert sorted(a) == sorted(b)  # deterministic
+    assert sorted(a) != sorted(c)  # different year -> different queries
+
+
+def test_cohort_plan_has_star_and_topic_strata() -> None:
+    names = {s.name for s in build_cohort_plan(2019).strategies}
+    assert sum(1 for n in names if n.startswith("cohort_star_")) == 3
+    assert sum(1 for n in names if n.startswith("cohort_topic_")) == 2
+
+
+def test_earliest_cohort_year_is_reasonable() -> None:
+    assert 2010 <= EARLIEST_COHORT_YEAR <= 2015
 
 
 def test_iter_search_pages_within_result_cap() -> None:

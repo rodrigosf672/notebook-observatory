@@ -55,8 +55,16 @@ def build_daily_snapshot(observations: pd.DataFrame, run_date: str) -> pd.DataFr
     parsed = observations[observations["parse_ok"]] if total else observations
     n_parsed = len(parsed)
 
+    # Collection mode ("daily" or "cohort"); default to daily for older rows.
+    collection_type = "daily"
+    if total and "collection_type" in observations.columns:
+        modes = observations["collection_type"].dropna().unique()
+        if len(modes):
+            collection_type = str(modes[0])
+
     snap: dict[str, Any] = {
         "run_date": run_date,
+        "collection_type": collection_type,
         "notebooks_collected": total,
         "notebooks_parsed": n_parsed,
         "parse_success_rate": round(n_parsed / total, 4) if total else 0.0,
@@ -116,6 +124,12 @@ def build_library_adoption(observations: pd.DataFrame, run_date: str) -> pd.Data
     n_parsed = len(parsed)
     registry = get_registry()
 
+    collection_type = "daily"
+    if len(observations) and "collection_type" in observations.columns:
+        modes = observations["collection_type"].dropna().unique()
+        if len(modes):
+            collection_type = str(modes[0])
+
     rows: list[dict[str, Any]] = []
     for lib in all_known_libraries():
         col = f"lib_{lib}"
@@ -123,6 +137,7 @@ def build_library_adoption(observations: pd.DataFrame, run_date: str) -> pd.Data
         rows.append(
             {
                 "run_date": run_date,
+                "collection_type": collection_type,
                 "library": lib,
                 "category": registry.libraries[lib].category,
                 "notebook_count": count,

@@ -20,12 +20,18 @@ from ..parsers.notebook_parser import parse_notebook
 from .metrics import compute_metrics
 
 
-def build_observation(collected: CollectedNotebook, run_date: str) -> dict[str, Any]:
+def build_observation(
+    collected: CollectedNotebook, run_date: str, collection_type: str = "daily"
+) -> dict[str, Any]:
     """Parse one collected notebook and build its full observation row.
 
     Args:
         collected: The downloaded notebook + provenance.
-        run_date: ISO date string for the collection run.
+        run_date: ISO date string for the collection run (for a creation-year
+            cohort this is ``YEAR-01-01``).
+        collection_type: ``"daily"`` for the live daily census or ``"cohort"``
+            for a historical creation-year backfill. Recorded on every row so
+            the two collection modes can be filtered apart downstream.
 
     Returns:
         A flat dict combining provenance, features, detection flags, and metrics.
@@ -34,7 +40,7 @@ def build_observation(collected: CollectedNotebook, run_date: str) -> dict[str, 
     detection = detect_libraries(features.imports)
     metrics = compute_metrics(features, detection)
 
-    row: dict[str, Any] = {"run_date": run_date}
+    row: dict[str, Any] = {"run_date": run_date, "collection_type": collection_type}
     # Provenance (excludes the raw payload).
     row.update(collected.provenance())
     # Features (lists flattened to ;-joined strings via to_row()).

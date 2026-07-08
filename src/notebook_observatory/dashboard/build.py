@@ -33,16 +33,14 @@ PLOTLY_CDN = "https://cdn.plot.ly/plotly-2.35.2.min.js"
 
 # Libraries/metrics highlighted in the multi-series charts.
 _TREND_LIBRARIES = [
-    "pandas",
     "numpy",
+    "pandas",
     "matplotlib",
     "scikit_learn",
+    "seaborn",
     "pytorch",
     "tensorflow",
-    "plotly",
-    "seaborn",
-    "marimo",
-    "ipywidgets",
+    "transformers",
 ]
 
 

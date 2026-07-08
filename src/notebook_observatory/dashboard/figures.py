@@ -53,15 +53,26 @@ _LAYOUT = dict(
     paper_bgcolor="rgba(0,0,0,0)",
     plot_bgcolor="rgba(0,0,0,0)",
     font=dict(family="Inter, system-ui, sans-serif", size=13, color="#E6EDF3"),
-    margin=dict(l=50, r=20, t=50, b=45),
+    margin=dict(l=50, r=20, t=54, b=90),
     hovermode="closest",
     colorway=PALETTE,
-    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
+    # Legend below the plot so it never collides with the title (many-series
+    # line charts wrap to 2-3 rows — the bottom margin above leaves room).
+    legend=dict(
+        orientation="h",
+        yanchor="top",
+        y=-0.18,
+        xanchor="left",
+        x=0,
+        font=dict(size=11),
+    ),
 )
 
 
 def _apply(fig: go.Figure, title: str) -> go.Figure:
-    fig.update_layout(title=dict(text=title, x=0.01, xanchor="left"), **_LAYOUT)
+    fig.update_layout(
+        title=dict(text=title, x=0.01, xanchor="left", y=0.97, yanchor="top"), **_LAYOUT
+    )
     fig.update_xaxes(gridcolor="rgba(255,255,255,0.06)", zeroline=False)
     fig.update_yaxes(gridcolor="rgba(255,255,255,0.06)", zeroline=False)
     return fig

@@ -1,65 +1,65 @@
 {
-  "run_date": "2026-07-15",
+  "run_date": "2026-07-16",
   "notebooks_collected": 400,
   "notebooks_parsed": 399,
   "repos_sampled": 147,
   "strata": [
-    "repo_size:size:<500",
-    "stars:small",
-    "stars:medium",
-    "topic:nlp",
+    "stars:head",
+    "stars:popular",
+    "repo_size:size:500..5000",
+    "stars:very_popular",
     "activity:recent_push",
-    "age:created_2015",
-    "stars:long_tail"
+    "topic:computer-vision",
+    "age:created_2016"
   ],
   "top_libraries": [
     {
       "library": "numpy",
       "category": "array",
-      "adoption_pct": 53.634,
-      "notebook_count": 214
+      "adoption_pct": 56.642,
+      "notebook_count": 226
     },
     {
       "library": "matplotlib",
       "category": "plotting",
-      "adoption_pct": 48.371,
-      "notebook_count": 193
+      "adoption_pct": 49.123,
+      "notebook_count": 196
     },
     {
       "library": "pandas",
       "category": "array",
-      "adoption_pct": 42.105,
-      "notebook_count": 168
+      "adoption_pct": 36.09,
+      "notebook_count": 144
     },
     {
       "library": "scikit_learn",
       "category": "ml",
-      "adoption_pct": 25.564,
-      "notebook_count": 102
-    },
-    {
-      "library": "seaborn",
-      "category": "plotting",
-      "adoption_pct": 14.286,
-      "notebook_count": 57
+      "adoption_pct": 19.549,
+      "notebook_count": 78
     },
     {
       "library": "pytorch",
       "category": "deep_learning",
-      "adoption_pct": 12.03,
-      "notebook_count": 48
+      "adoption_pct": 18.546,
+      "notebook_count": 74
     },
     {
       "library": "scipy",
       "category": "scientific",
-      "adoption_pct": 11.779,
-      "notebook_count": 47
+      "adoption_pct": 12.281,
+      "notebook_count": 49
+    },
+    {
+      "library": "seaborn",
+      "category": "plotting",
+      "adoption_pct": 12.03,
+      "notebook_count": 48
     },
     {
       "library": "tensorflow",
       "category": "deep_learning",
-      "adoption_pct": 9.524,
-      "notebook_count": 38
+      "adoption_pct": 10.025,
+      "notebook_count": 40
     },
     {
       "library": "requests",
@@ -68,14 +68,14 @@
       "notebook_count": 23
     },
     {
-      "library": "langchain",
-      "category": "llm",
-      "adoption_pct": 3.759,
-      "notebook_count": 15
+      "library": "keras",
+      "category": "deep_learning",
+      "adoption_pct": 3.258,
+      "notebook_count": 13
     }
   ],
   "client_stats": {
-    "core_requests": 525,
+    "core_requests": 522,
     "search_requests": 7,
     "cache_hits": 0,
     "conditional_not_modified": 0,

@@ -1,81 +1,81 @@
 {
-  "run_date": "2026-07-21",
+  "run_date": "2026-07-22",
   "notebooks_collected": 400,
-  "notebooks_parsed": 396,
+  "notebooks_parsed": 400,
   "repos_sampled": 147,
   "strata": [
-    "age:created_2021",
-    "stars:medium",
-    "repo_size:size:5000..50000",
-    "topic:deep-learning",
-    "stars:small",
-    "stars:long_tail",
-    "activity:recent_push"
+    "stars:popular",
+    "activity:recent_push",
+    "stars:very_popular",
+    "repo_size:size:>50000",
+    "stars:head",
+    "age:created_2022",
+    "topic:data-analysis"
   ],
   "top_libraries": [
     {
       "library": "numpy",
       "category": "array",
-      "adoption_pct": 69.192,
-      "notebook_count": 274
+      "adoption_pct": 60.75,
+      "notebook_count": 243
     },
     {
       "library": "matplotlib",
       "category": "plotting",
-      "adoption_pct": 58.081,
-      "notebook_count": 230
+      "adoption_pct": 49.5,
+      "notebook_count": 198
     },
     {
       "library": "pandas",
       "category": "array",
-      "adoption_pct": 39.646,
-      "notebook_count": 157
-    },
-    {
-      "library": "scikit_learn",
-      "category": "ml",
-      "adoption_pct": 26.263,
-      "notebook_count": 104
-    },
-    {
-      "library": "seaborn",
-      "category": "plotting",
-      "adoption_pct": 18.687,
-      "notebook_count": 74
-    },
-    {
-      "library": "scipy",
-      "category": "scientific",
-      "adoption_pct": 17.172,
-      "notebook_count": 68
+      "adoption_pct": 39.0,
+      "notebook_count": 156
     },
     {
       "library": "pytorch",
       "category": "deep_learning",
-      "adoption_pct": 16.414,
-      "notebook_count": 65
+      "adoption_pct": 24.5,
+      "notebook_count": 98
+    },
+    {
+      "library": "scikit_learn",
+      "category": "ml",
+      "adoption_pct": 19.25,
+      "notebook_count": 77
+    },
+    {
+      "library": "seaborn",
+      "category": "plotting",
+      "adoption_pct": 9.75,
+      "notebook_count": 39
+    },
+    {
+      "library": "scipy",
+      "category": "scientific",
+      "adoption_pct": 7.5,
+      "notebook_count": 30
     },
     {
       "library": "tensorflow",
       "category": "deep_learning",
-      "adoption_pct": 14.646,
-      "notebook_count": 58
+      "adoption_pct": 6.75,
+      "notebook_count": 27
     },
     {
       "library": "transformers",
       "category": "deep_learning",
-      "adoption_pct": 4.798,
-      "notebook_count": 19
+      "adoption_pct": 6.75,
+      "notebook_count": 27
     },
     {
-      "library": "ipywidgets",
-      "category": "interactive",
-      "adoption_pct": 3.283,
-      "notebook_count": 13
+      "library": "keras",
+      "category": "deep_learning",
+      "adoption_pct": 5.25,
+      "notebook_count": 21
     }
   ],
   "client_stats": {
-    "core_requests": 518,
+    "core_requests": 509,
     "search_requests": 7,
     "cache_hits": 0,
     "conditional_not_modified": 0,
